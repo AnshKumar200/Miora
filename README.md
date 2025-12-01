@@ -1,4 +1,4 @@
-# Memoa
+# Miora
 Note taking webapp
 
 ## Getting Started
