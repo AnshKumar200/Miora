@@ -9,8 +9,8 @@ Follow these instructions to set up and run the webapp locally.
 
 ### 1. Clone the Repository
 ```bash
-git https://github.com/AnshKumar200/Memoa.git
-cd Memoa
+git https://github.com/AnshKumar200/Miora.git
+cd Miora
 ```
 
 ## 2. Install Dependencies
