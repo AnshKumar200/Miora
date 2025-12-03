@@ -1,10 +1,10 @@
 import './App.css'
-import Note from './components/Note'
+import NoteBoard from './components/NoteBoard'
 
 function App() {
     return (
         <div className=''>
-            <Note />
+            <NoteBoard />
         </div>
     )
 }

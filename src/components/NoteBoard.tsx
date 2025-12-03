@@ -2,10 +2,14 @@ import { useEffect, useRef, useState } from "react"
 import axios from "axios";
 import AddNote from "./AddNote";
 import type { Note as NoteType } from '../types/types'
+import NoteCard from "./NoteCard";
+import EditNote from "./EditNote";
 
-export default function Note() {
+export default function NoteBoard() {
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [addMenu, setAddMenu] = useState(false);
+    const [editMenu, setEditMenu] = useState(false);
+    const [clickedId, setClickedId] = useState("");
     const draggingItem = useRef<string | null>(null);
     const dragOverItem = useRef<string | null>(null);
 
@@ -52,7 +56,7 @@ export default function Note() {
     const handleSync = async () => {
         try {
             const updated = notes.map((n, index) => ({ ...n, order: index }));
-            await axios.post("http://localhost:7878/update_notes", updated);
+            await axios.post("http://localhost:7878/sync_notes", updated);
             fetchNotes();
             console.log("Synced!");
         } catch (err) {
@@ -70,6 +74,15 @@ export default function Note() {
         setNotes(prev => [...prev, tempNote]);
     }
 
+    const handleEdit = (note_id: string) => {
+        setEditMenu(true);
+        setClickedId(note_id)
+    }
+
+    const handleUpdate = () => {
+        fetchNotes()
+    }
+
     return (
         <div className="flex h-screen bg-background text-white p-5">
             <div className="w-full relative">
@@ -80,25 +93,19 @@ export default function Note() {
 
                 <div className="flex gap-5">
                     {notes.map(note => (
-                        <div key={note._id} className="bg-primary p-5 rounded-2xl"
-                            onDragStart={(e) => handleDragStart(e, note._id)}
-                            onDragEnter={(e) => handleDragEnter(e, note._id)}
+                        <NoteCard
+                            key={note._id}
+                            note={note}
+                            onDragStart={handleDragStart}
+                            onDragEnter={handleDragEnter}
                             onDragEnd={handleDragEnd}
-                            draggable>
-                            <div>{note.text}
-                            </div>
-
-                            <div className="flex flex-col gap-5 mt-5">
-                                {note.sub_notes.map(sbnote => (
-                                    <div key={sbnote._id} className="bg-secondary px-5 py-2 rounded-2xl">
-                                        <div>{sbnote._id}</div>
-                                        <div>{sbnote.text}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                            onClick={handleEdit}
+                        />
                     ))}
                 </div>
+            </div>
+            <div className={`${editMenu === true ? "" : "hidden"} ml-auto`}>
+                <EditNote NoteId={clickedId} onUpdate={handleUpdate}/>
             </div>
             <div className={`${addMenu === true ? "" : "hidden"} ml-auto`}>
                 <AddNote onNoteAdd={handleAdd} />

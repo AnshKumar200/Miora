@@ -31,7 +31,7 @@ app.get("/get_notes", async (_, res) => {
 
 });
 
-app.post("/update_notes", async (req, res) => {
+app.post("/sync_notes", async (req, res) => {
     try {
         const notes = req.body;
         const ops = notes.map((note: any) => {
@@ -61,8 +61,37 @@ app.post("/update_notes", async (req, res) => {
             res.status(500).json("unexpected error");
         }
     }
-
 });
+
+app.get("/find_note", async (req, res) => {
+    try {
+        const { id } = req.query;
+        const note = await Note.find({ _id: id }, {});
+        res.status(200).json(note);
+    } catch (err: unknown) {
+        if(err instanceof Error) {
+            res.status(500).json({ error: err.message })
+        }
+        else {
+            res.status(500).json("unexpected error")
+        }
+    }
+})
+
+app.post("/update_note", async (req, res) => {
+    try {
+        const { _id, ...noteData } = req.body;
+        await Note.updateOne( { _id: req.body._id }, { $set : noteData })  
+        res.json({ success: true })
+    } catch (err) {
+        if(err instanceof Error) {
+            res.status(500).json({ error: err.message })
+        }
+        else {
+            res.status(500).json("unexpected error")
+        }
+    }
+})
 
 app.listen(PORT, () => {
     console.log(`Listening on ${PORT}`)
