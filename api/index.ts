@@ -28,7 +28,6 @@ app.get("/get_notes", async (_, res) => {
             res.status(500).json("unexpected error");
         }
     }
-
 });
 
 app.post("/sync_notes", async (req, res) => {

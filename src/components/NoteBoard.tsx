@@ -4,12 +4,15 @@ import AddNote from "./AddNote";
 import type { Note as NoteType } from '../types/types'
 import NoteCard from "./NoteCard";
 import EditNote from "./EditNote";
+import { CircleCheck, CircleX } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 export default function NoteBoard() {
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [addMenu, setAddMenu] = useState(false);
     const [editMenu, setEditMenu] = useState(false);
     const [clickedId, setClickedId] = useState("");
+    const [syncNow, setSyncNow] = useState(true);
     const draggingItem = useRef<string | null>(null);
     const dragOverItem = useRef<string | null>(null);
 
@@ -51,6 +54,8 @@ export default function NoteBoard() {
 
         draggingItem.current = null;
         dragOverItem.current = null;
+
+        setSyncNow(false)
     }
 
     const handleSync = async () => {
@@ -58,6 +63,7 @@ export default function NoteBoard() {
             const updated = notes.map((n, index) => ({ ...n, order: index }));
             await axios.post("http://localhost:7878/sync_notes", updated);
             fetchNotes();
+            setSyncNow(true)
             console.log("Synced!");
         } catch (err) {
             console.error("Note able to sync: ", err);
@@ -67,11 +73,12 @@ export default function NoteBoard() {
     const handleAdd = (noteData: { text: string }) => {
         const tempNote: NoteType = {
             ...noteData,
-            _id: `temp-${Date.now()}`,
+            _id: uuidv4(),
             order: notes.length,
             sub_notes: []
         }
         setNotes(prev => [...prev, tempNote]);
+        setSyncNow(false)
     }
 
     const handleEdit = (note_id: string) => {
@@ -87,11 +94,15 @@ export default function NoteBoard() {
         <div className="flex h-screen bg-background text-white p-5">
             <div className="w-full relative">
                 <div className="absolute right-0 flex flex-col gap-5">
-                    <button onClick={() => setAddMenu(!addMenu)} className="bg-primary p-4 rounded-2xl">Add note</button>
-                    <button onClick={handleSync} className="bg-primary p-4 rounded-2xl">Sync</button>
+                    <button onClick={() => setAddMenu(!addMenu)} className={`bg-primary p-4 rounded-2xl ${addMenu ? "hidden" : ""}`}>Add note</button>
+                    <button onClick={handleSync} className="bg-primary p-4 rounded-2xl flex gap-2">
+                        <CircleCheck className={`${syncNow === true ? "text-green-300" : "hidden"}`} />
+                        <CircleX className={`${syncNow === true ? "hidden" : "text-red-300"}`} />
+                        <div>Sync</div>
+                    </button>
                 </div>
 
-                <div className="flex gap-5">
+                <div className="flex gap-5 flex-wrap">
                     {notes.map(note => (
                         <NoteCard
                             key={note._id}
@@ -108,7 +119,7 @@ export default function NoteBoard() {
                 <EditNote NoteId={clickedId} onUpdate={handleUpdate}/>
             </div>
             <div className={`${addMenu === true ? "" : "hidden"} ml-auto`}>
-                <AddNote onNoteAdd={handleAdd} />
+                <AddNote onNoteAdd={handleAdd} closeAdd={() => setAddMenu(false)} />
             </div>
         </div>
     )
