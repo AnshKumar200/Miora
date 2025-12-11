@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap');
 @import "tailwindcss";
 
 @theme {
+    --font-gochi: "Gochi Hand", cursive;
+
     --color-primary: #232329;
     --color-secondary: #363541;
     --color-background: #121212;

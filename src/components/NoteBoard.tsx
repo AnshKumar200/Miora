@@ -96,14 +96,20 @@ export default function NoteBoard() {
 
     return (
         <div className="flex h-screen bg-background text-white p-5">
-            <div className="w-full relative">
-                <div className="absolute right-0 flex flex-col gap-5">
-                    <button onClick={() => setAddMenu(!addMenu)} className={`bg-primary p-4 rounded-2xl ${addMenu ? "hidden" : ""}`}>Add note</button>
-                    <button onClick={handleSync} className="bg-primary p-4 rounded-2xl flex gap-2">
-                        <CircleCheck className={`${syncNow === true ? "text-green-300" : "hidden"}`} />
-                        <CircleX className={`${syncNow === true ? "hidden" : "text-red-300"}`} />
-                        <div>Sync</div>
-                    </button>
+            <div className="w-full flex flex-col gap-5">
+                <div className="flex gap-5">
+                    <div className="flex gap-4 items-center">
+                        <img src="logo.png" className="size-10"/>
+                        <div className="font-gochi text-5xl">Miora</div>
+                    </div>
+                    <div className="flex gap-5 ml-auto">
+                        <button onClick={() => setAddMenu(!addMenu)} className={`bg-primary p-4 rounded-2xl ${addMenu ? "hidden" : ""}`}>Add note</button>
+                        <button onClick={handleSync} className="bg-primary p-4 rounded-2xl flex gap-2">
+                            <CircleCheck className={`${syncNow === true ? "text-green-300" : "hidden"}`} />
+                            <CircleX className={`${syncNow === true ? "hidden" : "text-red-300"}`} />
+                            <div>Sync</div>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex gap-5 flex-wrap">
