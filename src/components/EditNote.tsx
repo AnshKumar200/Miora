@@ -11,6 +11,7 @@ interface EditNoteProps {
 
 export default function EditNote({ NoteId, onUpdate, closeEdit }: EditNoteProps) {
     const [noteData, setNoteData] = useState<NoteType>();
+    const colors = ["bg-red-500", "bg-pink-500", "bg-purple-500", "bg-indigo-500", "bg-blue-500", "bg-cyan-500", "bg-teal-500", "bg-green-500", "bg-lime-500", "bg-yellow-500", "bg-amber-500", "bg-orange-500", "bg-gray-500", "bg-white"];
 
     useEffect(() => {
         if (NoteId) {
@@ -49,45 +50,43 @@ export default function EditNote({ NoteId, onUpdate, closeEdit }: EditNoteProps)
 
         try {
             await axios.post("http://localhost:7878/update_note", noteData)
-            onUpdate();
+            onUpdate()
         } catch (err) {
             console.log("Error updating note: ", err);
         }
     }
 
     const handleClose = () => {
-        closeEdit();
+        setNoteData({} as NoteType)
+        closeEdit()
     }
 
     return (
         <div className="w-80 bg-[#232329] p-5 rounded-2xl ml-5 relative">
             <X onClick={handleClose} className="absolute top-5 right-5 cursor-pointer" />
-            <div>Edit Note</div>
+            <div>Note</div>
             {noteData && (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <label>
-                        Text:
+                        Heading: 
                         <input
                             type="text"
                             size={10}
                             value={noteData.MainNoteText}
                             onChange={handleTextChange}
-                            className="bg-secondary ml-3 rounded-lg px-2 py-1" />
+                            className="bg-secondary rounded-lg px-2 py-1 ml-2" />
                     </label>
 
-                    <div className="flex flex-col gap-5 mt-5">
-                        {noteData && noteData.sub_notes && noteData.sub_notes.map(sbnote => (
-                            <label key={sbnote._id}>
-                                Text:
-                                <input
-                                    type="text"
-                                    size={10}
-                                    value={sbnote.text}
-                                    onChange={(e) => handleSubTextChange(e, sbnote._id)}
-                                    className="bg-secondary ml-3 rounded-lg px-2 py-1" />
-                            </label>
-                        ))}
-                    </div>
+                    {noteData && noteData.sub_notes && noteData.sub_notes.map((sbnote, index) => (
+                        <div key={sbnote._id}>
+                            <input
+                                type="text"
+                                size={10}
+                                value={sbnote.text}
+                                onChange={(e) => handleSubTextChange(e, sbnote._id)}
+                                className={`${colors[index%colors.length]} rounded-lg px-2 py-1`} />
+                        </div>
+                    ))}
                     <button type="submit" className="p-2 border rounded-lg bg-secondary">Save</button>
                 </form>
             )}
