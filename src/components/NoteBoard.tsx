@@ -40,10 +40,18 @@ export default function NoteBoard() {
     }
 
     const handleDragEnd = () => {
-        const draggingIndex = notes.findIndex(n => n._id === draggingItem.current);
-        const dragOverIndex = notes.findIndex(n => n._id === dragOverItem.current);
+        const dragItem = draggingItem.current;
+        const dragOver = dragOverItem.current;
 
-        if (draggingIndex === dragOverIndex) return;
+        draggingItem.current = null;
+        dragOverItem.current = null;
+
+        if (!dragItem || !dragOver || dragItem === dragOver) return;
+
+        const draggingIndex = notes.findIndex(n => n._id === dragItem);
+        const dragOverIndex = notes.findIndex(n => n._id === dragOver);
+
+        if (draggingIndex === -1 || dragOverIndex === -1) return;
 
         const updateNotes = [...notes];
         const temp = updateNotes[draggingIndex];
@@ -51,10 +59,6 @@ export default function NoteBoard() {
         updateNotes[dragOverIndex] = temp;
 
         setNotes(updateNotes);
-
-        draggingItem.current = null;
-        dragOverItem.current = null;
-
         setSyncNow(false)
     }
 
@@ -70,20 +74,20 @@ export default function NoteBoard() {
         }
     }
 
-    const handleAdd = (noteData: { text: string }) => {
+    const handleAdd = async (noteData: NoteType) => {
         const tempNote: NoteType = {
-            ...noteData,
             _id: uuidv4(),
+            MainNoteText: noteData.MainNoteText,
             order: notes.length,
-            sub_notes: []
+            sub_notes: noteData.sub_notes
         }
         setNotes(prev => [...prev, tempNote]);
         setSyncNow(false)
     }
 
-    const handleEdit = (note_id: string) => {
-        setEditMenu(true);
+    const handleEdit = async (note_id: string) => {
         setClickedId(note_id)
+        setEditMenu(true);
     }
 
     const handleUpdate = () => {
@@ -103,7 +107,7 @@ export default function NoteBoard() {
                 </div>
 
                 <div className="flex gap-5 flex-wrap">
-                    {notes.map(note => (
+                    {notes && notes.map(note => (
                         <NoteCard
                             key={note._id}
                             note={note}
@@ -116,7 +120,7 @@ export default function NoteBoard() {
                 </div>
             </div>
             <div className={`${editMenu === true ? "" : "hidden"} ml-auto`}>
-                <EditNote NoteId={clickedId} onUpdate={handleUpdate}/>
+                <EditNote NoteId={clickedId} onUpdate={handleUpdate} closeEdit={() => setEditMenu(false)} />
             </div>
             <div className={`${addMenu === true ? "" : "hidden"} ml-auto`}>
                 <AddNote onNoteAdd={handleAdd} closeAdd={() => setAddMenu(false)} />

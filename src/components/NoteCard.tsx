@@ -16,7 +16,7 @@ export default function NoteCard({ note, onDragStart, onDragEnter, onDragEnd, on
             onDragEnd={onDragEnd}
             onClick={() => onClick(note._id)}
             draggable>
-            <div>{note.text}</div>
+            <div>{note.MainNoteText}</div>
             <div className="flex flex-col gap-5 mt-5">
                 {note.sub_notes.map(sbnote => (
                     <div key={sbnote._id} className="bg-secondary px-5 py-2 rounded-2xl">

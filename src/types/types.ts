@@ -5,7 +5,7 @@ export interface SubNote {
 
 export interface Note {
     _id: string,
-    text: string,
+    MainNoteText: string,
     order: number,
     sub_notes: SubNote[]
 }

@@ -1,13 +1,15 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react"
 import type { Note as NoteType } from "../types/types";
 import axios from "axios";
+import { X } from "lucide-react";
 
 interface EditNoteProps {
     NoteId: string,
-    onUpdate: () => void;
+    onUpdate: () => void,
+    closeEdit: () => void;
 }
 
-export default function EditNote({ NoteId, onUpdate }: EditNoteProps) {
+export default function EditNote({ NoteId, onUpdate, closeEdit }: EditNoteProps) {
     const [noteData, setNoteData] = useState<NoteType>();
 
     useEffect(() => {
@@ -23,8 +25,7 @@ export default function EditNote({ NoteId, onUpdate }: EditNoteProps) {
                 params: {
                     id: NoteId
                 }
-            }
-            )
+            })
             setNoteData(resp.data[0]);
         } catch (err) {
             console.log("Error getting note data: ", err)
@@ -33,7 +34,7 @@ export default function EditNote({ NoteId, onUpdate }: EditNoteProps) {
 
     const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!noteData) return;
-        setNoteData({ ...noteData, text: e.target.value })
+        setNoteData({ ...noteData, MainNoteText: e.target.value })
     }
 
     const handleSubTextChange = (e: ChangeEvent<HTMLInputElement>, subId: string) => {
@@ -54,8 +55,13 @@ export default function EditNote({ NoteId, onUpdate }: EditNoteProps) {
         }
     }
 
+    const handleClose = () => {
+        closeEdit();
+    }
+
     return (
-        <div className="w-80 bg-[#232329] p-5 rounded-2xl ml-5">
+        <div className="w-80 bg-[#232329] p-5 rounded-2xl ml-5 relative">
+            <X onClick={handleClose} className="absolute top-5 right-5 cursor-pointer" />
             <div>Edit Note</div>
             {noteData && (
                 <form onSubmit={handleSubmit}>
@@ -64,19 +70,19 @@ export default function EditNote({ NoteId, onUpdate }: EditNoteProps) {
                         <input
                             type="text"
                             size={10}
-                            value={noteData.text}
+                            value={noteData.MainNoteText}
                             onChange={handleTextChange}
                             className="bg-secondary ml-3 rounded-lg px-2 py-1" />
                     </label>
 
                     <div className="flex flex-col gap-5 mt-5">
-                        {noteData.sub_notes.map(sbnote => (
+                        {noteData && noteData.sub_notes && noteData.sub_notes.map(sbnote => (
                             <label key={sbnote._id}>
                                 Text:
                                 <input
                                     type="text"
-                                    size={10} 
-                                    value={sbnote.text} 
+                                    size={10}
+                                    value={sbnote.text}
                                     onChange={(e) => handleSubTextChange(e, sbnote._id)}
                                     className="bg-secondary ml-3 rounded-lg px-2 py-1" />
                             </label>

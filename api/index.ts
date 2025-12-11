@@ -33,24 +33,21 @@ app.get("/get_notes", async (_, res) => {
 app.post("/sync_notes", async (req, res) => {
     try {
         const notes = req.body;
-        const ops = notes.map((note: any) => {
-            if(mongoose.Types.ObjectId.isValid(note._id)) {
-                return {
-                    updateOne: {
-                        filter: { _id: note._id },
-                        update: { $set: { order: note.order } }
-                    }
-                };
-            } else {
-                const { _id, ...noteData } = note;
-                return {
-                    insertOne: {
-                        document: noteData
-                    }
-                };
-            }
+
+        const syncNotes = notes.map((note: any) => {
+            const {_id, ...noteData} = note;
+            return {
+                updateOne: {
+                    filter: { _id: _id },
+                    update: { $set: noteData },
+                    upsert: true,
+                }
+            };
         })
-        await Note.bulkWrite(ops);
+
+        console.log(JSON.stringify(syncNotes))
+
+        await Note.bulkWrite(syncNotes);
         res.json({ success: true });
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -68,7 +65,7 @@ app.get("/find_note", async (req, res) => {
         const note = await Note.find({ _id: id }, {});
         res.status(200).json(note);
     } catch (err: unknown) {
-        if(err instanceof Error) {
+        if (err instanceof Error) {
             res.status(500).json({ error: err.message })
         }
         else {
@@ -80,10 +77,10 @@ app.get("/find_note", async (req, res) => {
 app.post("/update_note", async (req, res) => {
     try {
         const { _id, ...noteData } = req.body;
-        await Note.updateOne( { _id: req.body._id }, { $set : noteData })  
+        await Note.updateOne({ _id: req.body._id }, { $set: noteData })
         res.json({ success: true })
     } catch (err) {
-        if(err instanceof Error) {
+        if (err instanceof Error) {
             res.status(500).json({ error: err.message })
         }
         else {
