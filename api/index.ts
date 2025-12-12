@@ -45,8 +45,6 @@ app.post("/sync_notes", async (req, res) => {
             };
         })
 
-        console.log(JSON.stringify(syncNotes))
-
         await Note.bulkWrite(syncNotes);
         res.json({ success: true });
     } catch (err: unknown) {

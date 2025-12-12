@@ -1,11 +1,17 @@
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import NoteBoard from './components/NoteBoard'
+import HomePage from './pages/HomePage'
+import NotePage from './pages/NotePage'
+import Layout from './pages/Layout'
 
 function App() {
     return (
-        <div className=''>
-            <NoteBoard />
-        </div>
+        <Routes>
+            <Route path='/' element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path='/note/:id' element={<NotePage />} />
+            </Route>
+        </Routes>
     )
 }
 

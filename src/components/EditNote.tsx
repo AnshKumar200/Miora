@@ -29,7 +29,7 @@ export default function EditNote({ NoteId, onUpdate, closeEdit }: EditNoteProps)
             })
             setNoteData(resp.data[0]);
         } catch (err) {
-            console.log("Error getting note data: ", err)
+            console.error("Error getting note data: ", err)
         }
     }
 

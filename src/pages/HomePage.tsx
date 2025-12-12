@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios";
-import AddNote from "./AddNote";
 import type { Note as NoteType } from '../types/types'
-import NoteCard from "./NoteCard";
-import EditNote from "./EditNote";
 import { CircleCheck, CircleX } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import EditNote from "../components/EditNote";
+import NoteCard from "../components/NoteCard";
+import AddNote from "../components/AddNote";
 
-export default function NoteBoard() {
+export default function HomePage() {
     const [notes, setNotes] = useState<NoteType[]>([]);
     const [addMenu, setAddMenu] = useState(false);
     const [editMenu, setEditMenu] = useState(false);
@@ -95,41 +95,24 @@ export default function NoteBoard() {
     }
 
     return (
-        <div className="flex min-h-screen bg-background text-white p-5 font-poppins">
-            <div className="w-full flex flex-col gap-5">
-                <div className="flex gap-4 items-center">
-                    <img src="logo.png" className="size-10" />
-                    <div className="font-gochi text-5xl">Miora</div>
-                </div>
-                <div className="flex gap-5 flex-wrap items-start">
-                    {notes && notes.map(note => (
-                        <div key={note._id}>
-                            <NoteCard
-                                note={note}
-                                onDragStart={handleDragStart}
-                                onDragEnter={handleDragEnter}
-                                onDragEnd={handleDragEnd}
-                                onClick={handleEdit}
-                            />
-                        </div>
-                    ))}
-                </div>
+        <div className="flex flex-col">
+            <div className="flex gap-5 ml-auto">
+                <button onClick={() => setAddMenu(!addMenu)} className={`bg-primary p-4 rounded-2xl ${addMenu ? "hidden" : ""} text-nowrap`}>Add note</button>
+                <button onClick={handleSync} className="bg-primary p-4 rounded-2xl flex gap-2">
+                    <CircleCheck className={`${syncNow === true ? "text-green-300" : "hidden"}`} />
+                    <CircleX className={`${syncNow === true ? "hidden" : "text-red-300"}`} />
+                    <div>Sync</div>
+                </button>
             </div>
-            <div className="flex flex-col gap-5">
-                <div className="flex gap-5 ml-auto">
-                    <button onClick={() => setAddMenu(!addMenu)} className={`bg-primary p-4 rounded-2xl ${addMenu ? "hidden" : ""} text-nowrap`}>Add note</button>
-                    <button onClick={handleSync} className="bg-primary p-4 rounded-2xl flex gap-2">
-                        <CircleCheck className={`${syncNow === true ? "text-green-300" : "hidden"}`} />
-                        <CircleX className={`${syncNow === true ? "hidden" : "text-red-300"}`} />
-                        <div>Sync</div>
-                    </button>
-                </div>
-                <div className={`${editMenu === true ? "" : "hidden"} ml-auto`}>
-                    <EditNote NoteId={clickedId} onUpdate={handleUpdate} closeEdit={() => setEditMenu(false)} />
-                </div>
-                <div className={`${addMenu === true ? "" : "hidden"} ml-auto`}>
-                    <AddNote onNoteAdd={handleAdd} closeAdd={() => setAddMenu(false)} />
-                </div>
+            <div className="flex gap-5 flex-wrap">
+                {notes && notes.map(note => (
+                    <NoteCard
+                        note={note}
+                        onDragStart={handleDragStart}
+                        onDragEnter={handleDragEnter}
+                        onDragEnd={handleDragEnd}
+                    />
+                ))}
             </div>
         </div>
     )
